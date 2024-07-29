@@ -1,0 +1,15 @@
+streamlit
+mysql-connector-python
+pandas
+sqlalchemy
+pymysql
+reportlab
+pillow
+openpyxl
+streamlit-option-menu
+pyperclip
+openpyxl
+xlrd
+streamlit_echarts
+requests
+BeautifulSoup
