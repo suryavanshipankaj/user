@@ -46,36 +46,40 @@ def fetch_users(conn):
     cursor.execute(query)
     return cursor.fetchall()
 
-# Streamlit app
-st.title('User Information Collection')
+st.title('User Information Form')
 
-# Establish connection to the database
-conn = create_connection()
-if conn:
-    create_table(conn)
+# Form inputs
+with st.form(key='user_form'):
+    username = st.text_input('Username')
+    email = st.text_input('Email')
+    age = st.number_input('Age', min_value=0)
+    submit_button = st.form_submit_button(label='Submit')
 
-    # Form to collect user information
-    with st.form(key='user_form'):
-        name = st.text_input('Name')
-        email = st.text_input('Email')
-        age = st.number_input('Age', min_value=0, max_value=120)
-        submit_button = st.form_submit_button(label='Submit')
+# Save form data to CSV
+if submit_button:
+    # Create a DataFrame from the input data
+    user_data = pd.DataFrame({
+        'Username': [username],
+        'Email': [email],
+        'Age': [age]
+    })
+    
+    # Save the DataFrame to a CSV file
+    user_data.to_csv('user_data.csv', index=False)
+    st.success('Form data saved to CSV file.')
 
-    # Save data to the database
-    if submit_button:
-        if name and email and age:
-            insert_user(conn, name, email, age)
-            st.success('User information saved successfully!')
-        else:
-            st.error('Please fill in all fields')
+# Upload CSV data to the database
+if st.button('Upload to Database'):
+    # Create a SQLAlchemy engine
+    engine = create_engine(f'mysql+pymysql://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}')
+    
+    # Read the CSV file
+    user_data = pd.read_csv('user_data.csv')
+    
+    # Upload the data to the database
+    user_data.to_sql('users', engine, if_exists='append', index=False)
+    st.success('CSV data uploaded to the database.')
 
-    # Display saved data
-    if st.checkbox('Show user data'):
-        users = fetch_users(conn)
-        st.write(users)
-
-    # Close the database connection when the app is done
-    conn.close()
-else:
-    st.error('Failed to connect to the database')
-
+# Run the Streamlit app
+if __name__ == '__main__':
+    st.write('Fill in the form and submit, then click "Upload to Database" to save the data.')
