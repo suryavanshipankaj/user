@@ -1,6 +1,4 @@
-import streamlit as st
-import mysql.connector
-from mysql.connector import Error
+
 
 # Function to create a connection to the MySQL database
 def create_connection():
