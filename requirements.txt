@@ -13,3 +13,5 @@ xlrd
 streamlit_echarts
 requests
 BeautifulSoup
+mysql.connector
+mysql.connector import Error
